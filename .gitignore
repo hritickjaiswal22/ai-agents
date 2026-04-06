@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+env/
+venv/
+*.egg-info/
+
+# Database (local data)
+agent_sessions.db
+agno.db
+*.db
+
+# API Keys (NEVER commit these!)
+.env
+.env.local
+*.key
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
