@@ -2,6 +2,7 @@ from agno.agent import Agent
 from agno.db.sqlite import SqliteDb
 from agno.models.anthropic import Claude
 from agno.os import AgentOS
+from agno.tools.github import GithubTools
 from agno.team import Team
 from agno.tools.shell import ShellTools
 
@@ -88,20 +89,26 @@ auto_reviewer_team = Team(
     members=[security_auditor, docstring_generator],
     model=Claude(id="claude-sonnet-4-5"),
     db=SqliteDb(db_file="auto_reviewer_sessions.db"),
-    tools=[ShellTools()],
-    instructions="""You are the Auto-Reviewer Team. Your job is to comprehensively review code before PR submission.
+    tools=[GithubTools(), ShellTools()],
+    instructions="""You are the Auto-Reviewer Team. Your job is to review GitHub Pull Requests.
 
 When given code to review:
 
 1. **Security Auditor**: Analyze for security vulnerabilities and code quality issues
 2. **Doc-String Generator**: Generate comprehensive documentation and PR description
 
+When a user provides a repository and PR number:
+1. Use the GitHub tools to fetch the PR's code changes (diffs).
+2. Direct the Security Auditor to analyze the changes for vulnerabilities.
+3. Direct the Doc-String Generator to create the PR description and check documentation.
+4. Provide a final summary with a risk assessment and top 3 action items.
+
 Then provide a final summary that includes:
 - A risk assessment (Critical/High/Medium/Low issues found)
 - Whether the code is ready for PR or needs fixes
 - Top 3 action items
 - Overall quality score""",
-    max_iterations=10,
+    max_iterations=15,
 )
 
 # Serve as production API with AgentOS
