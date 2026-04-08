@@ -6,7 +6,10 @@ from agno.tools.github import GithubTools
 from agno.team import Team
 from agno.tools.shell import ShellTools
 from agno.db.postgres import PostgresDb
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 docstring_generator = Agent(
     name="Doc-String Generator",
