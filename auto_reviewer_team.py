@@ -1,10 +1,12 @@
 from agno.agent import Agent
-from agno.db.sqlite import SqliteDb
+# from agno.db.sqlite import SqliteDb
 from agno.models.anthropic import Claude
 from agno.os import AgentOS
 from agno.tools.github import GithubTools
 from agno.team import Team
 from agno.tools.shell import ShellTools
+from agno.db.postgres import PostgresDb
+import os
 
 docstring_generator = Agent(
     name="Doc-String Generator",
@@ -83,12 +85,14 @@ security_auditor = Agent(
 Be specific, actionable, and include code examples for fixes when possible.""",
 )
 
+DB_URL = os.environ["DATABASE_URL"]
+
 # Create the Auto-Reviewer Team
 auto_reviewer_team = Team(
     name="Auto-Reviewer",
     members=[security_auditor, docstring_generator],
     model=Claude(id="claude-sonnet-4-5"),
-    db=SqliteDb(db_file="auto_reviewer_sessions.db"),
+    db=PostgresDb(db_url=DB_URL),
     tools=[GithubTools(), ShellTools()],
     instructions="""You are the Auto-Reviewer Team. Your job is to review GitHub Pull Requests.
 
@@ -109,6 +113,7 @@ Then provide a final summary that includes:
 - Top 3 action items
 - Overall quality score""",
     max_iterations=15,
+    debug_mode=True,
 )
 
 # Serve as production API with AgentOS
